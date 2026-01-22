@@ -6,72 +6,14 @@ theme: quartz
 ---
 
 ```{r}
-install.packages("tidyverse")
-library(tidyverse)
-library(dplyr)
-library(readr)
-cases_raw2 <- "https://github.com/rstudio/EDAWR/blob/master/data-raw/cases.csv?raw=true"
 
-cases <- readr::read_csv(cases_raw2)
-cases %>% pivot_longer(cols=starts_with("20"), names_to = "year", values_to = "counts")
-pollution_raw <- "https://github.com/rstudio/EDAWR/blob/master/data-raw/pollution.csv?raw=true"
-
-pollution <- read_csv(pollution_raw)
-
-View(pollution)
-p1<- pollution %>%  pivot_wider(names_from = size, values_from = amount)
-```
-
-```{r}
-
-p2<- p1 %>% 
-  pivot_longer(
-    names_to = "size", 
-    values_to = "amount", 
-    cols = 2:3)
-
-```
-
-```{r}
-
-storms <- read_csv("https://github.com/rstudio/EDAWR/blob/master/data-raw/storms.csv?raw=true")
-View(storms)
-storms2 <- storms %>% 
-  separate(date, c("year", "month", "day"), sep="-")
-View(storms2)
-
-storms3 <- storms2 %>% 
-  unite("date", year, month, day, sep = "/")
-
-View(storms3)
-```
-
-```{r}
+#Load libraries
 library(tidyverse)
 library(tidyr)
 library(readr)
 
 
-
-gapminder_data <- as_tibble(gapminder_data) # make it tibble or tbl data type too
-
-head(gapminder_data)
-str(gapminder_data)
-
-
-str(gapminder_wide)
-head(gapminder_wide)
-
-gaplong <- gapminder_wide %>% 
-  pivot_longer(cols= c(starts_with("gdpPercap"), starts_with("lifeExp"), starts_with("pop")), names_to = "obstyp_year", values_to = "value"
-               )
-head(gaplong)
-View(gaplong)
-
-```
-
-```{r}
-gapminder <- gapminder_data
+gapminder <- as_tibble(gapminder_data) # make it tibble or tbl data type too
 
 ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp)) + geom_point()
 
@@ -104,6 +46,8 @@ plot4
 
 ```
 
+## Add trendline
+
 ```{r}
 logplot <- ggplot(data = gapminder, 
                        mapping = aes(x = gdpPercap, y = lifeExp)) +
@@ -116,7 +60,7 @@ log_plot
 
 ```
 
-##challenge 4
+## Challenge 4
 
 ```{r}
 
@@ -128,9 +72,10 @@ logplot_4 <- ggplot(data = gapminder,
   geom_smooth(method="lm", linewidth = 1.5)
 
 ?geom_point
+
 ```
 
-##Multipanel figrue
+## Multipanel figrue
 
 ```{r}
 americas <- gapminder[gapminder$continent== "Americas",]
@@ -156,7 +101,7 @@ ggsave(filename = "results/lifeExp.png", plot = lifeExp_plot, width = 15, height
 
 ```
 
-##challenge 5
+##Challenge 5
 
 ```{r}
 ggplot(data = gapminder, mapping = aes(x = continent, y = lifeExp, 
@@ -171,8 +116,8 @@ ggplot(data = gapminder, mapping = aes(x = continent, y = lifeExp,
 
 ```
 
-```{}
+```         
 ```
 
-```{}
+```         
 ```

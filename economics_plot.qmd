@@ -1,0 +1,84 @@
+---
+title: "Economics Scatterplot"
+format: html
+editor: visual
+---
+
+# Economics Scatterplot
+
+```{r}
+#load libraries
+install.packages("tidyverse")
+library(tidyverse)
+library(ggplot2)
+install.packages("RColorBrewer")
+library(RColorBrewer)
+
+ec <- read.csv("data_economist.csv",header=T)
+head(ec)
+str(ec)
+levels(ec$Region)
+
+ec$Region <- factor(ec$Region,levels = c("EU W. Europe",
+                                "Americas",
+                                "Asia Pacific",
+                                "East EU Cemt Asia",
+                                "MENA",
+                                "SSA"),
+                     labels = c("OECD",
+                                "Americas",
+                                "Asia &\nOceania",
+                                "Central &\nEastern Europe",
+                                "Middle East &\nNorth Africa",
+                                "Sub-Saharan\nAfrica"))
+
+ec$Region
+
+head(ec)
+
+labels <- c("Congo","Afghanistan","Sudan","Myanmar","Iraq","Venezuela","Russia","Argentina","Brazil","Italy","South Africa","Cape Verde","Bhutan","Botswana","Britian","New Zealand","Greece","China","India","Rwanda","Spain","France","United States","Japan","Norway","Singapore","Barbados","Germany")
+
+p+geom_text(data=subset(ec,Country %in% labels),aes(label=Country),color="black")
+
+p <- ec %>% ggplot(aes(x=CPI, y=HDI, color=Region)) +
+  geom_point(shape = 1, size = 3, fill ="white", stroke = 0.8) +
+  geom_smooth(method="lm",formula=y~poly(x,2),se=F,size=0.6, color="red") 
+
+p+ geom_text(data=subset(ec,Country %in% labels), 
+             aes(label=Country), color="black", size = 3)
+
+install.packages("ggrepel")
+
+library(ggrepel)
+p <- p+geom_text_repel(data=subset(ec,Country %in% labels),aes(label=Country),
+                       color="black",box.padding=unit(1,'lines'),segment.size=0.25,
+                       size=3,family="Gidole")
+p
+
+p <- p+scale_x_continuous(name="Corruption Perceptions Index, 2011 (10=least corrupt)",
+                          breaks=1:10,limits=c(1,10))+
+      scale_y_continuous(name="Human Development Index, 2011 (1=best)",
+                         breaks=seq(from=0,to=1,by=0.1),limits=c(0.2,1))
+p
+```
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
