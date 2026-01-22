@@ -1,0 +1,191 @@
+---
+title: "day3_dplyr"
+format: html
+editor: visual
+---
+
+
+```{r}
+install.packages("tidyverse")
+library(tidyverse)
+install.package ("gapminder")
+library(gapminder)
+str(gapminder)
+mean(gapminder$gdpPercap[gapminder$continent=="Africa"])
+mean(gapminder$gdpPercap[gapminder$continent=="Americas"])
+mean(gapminder$gdpPercap[gapminder$continent=="Asia"])
+df1 <- gapminder %>% 
+  select(continent,gdpPercap) %>% 
+  filter(continent %in% c("Africa", "Asia", "Americas")) %>% 
+  group_by(continent) %>% 
+  summarise(mean =mean(gdpPercap))
+
+df1
+```
+```{r}
+#Challeng1
+#Write a single command (which can span multiple lines and includes pipes) that will produce a data frame that has the African values for lifeExp, country and year, but not for other Continents. How many rows does your data frame have and why?
+
+chal1 <- gapminder %>% 
+  filter(continent=="Africa") %>% 
+  select(country, lifeExp,year)
+chal1
+  
+str(gapminder %>% group_by(continent))
+
+gdp_bycontinents <- gapminder %>%
+    group_by(continent) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap))
+gdp_bycontinents
+str(gdp_bycontinents)
+
+```
+
+```{r}
+#Challenge 2
+#Calculate the average life expectancy per country. Which has the longest average life expectancy and which has the shortest average life expectancy?
+
+chal2 <- gapminder %>% 
+  select(country,lifeExp) %>% 
+  group_by(country) %>% 
+  summarise(mean = mean(lifeExp))
+chal2_min <- chal2 %>% 
+  arrange(mean) %>% 
+  head(1)
+chal2_min
+chal2_max <- chal2 %>% 
+  arrange(desc(mean)) %>% 
+  head(1)
+chal2_max
+
+```
+
+```{r}
+library(ggplot2)
+
+## updating only if certain condition is fullfilled
+# for life expectations above 40 years, the gpd to be expected in the future is scaled
+gdp_future_bycontinents_byyear_high_lifeExp <- gapminder %>%
+    mutate(gdp_futureExpectation = ifelse(lifeExp > 40, 
+                                          gdpPercap * 1.5, 
+                                          gdpPercap)) %>%
+    group_by(continent, year) %>%
+    summarize(mean_gdpPercap = mean(gdpPercap),
+              mean_gdpPercap_expected = mean(gdp_futureExpectation))
+gdp_future_bycontinents_byyear_high_lifeExp %>% 
+  ggplot(mapping = aes(x = year, y = mean_gdpPercap, group = continent, colour = continent)) + 
+  geom_line() 
+
+# Filter countries located in the Americas
+americas <- gapminder[gapminder$continent == "Americas", ]
+# Make the plot
+ggplot(data = americas, 
+       mapping = aes(x = year, y = lifeExp)) +
+  geom_line() +
+  facet_wrap( ~ country) +
+  theme(axis.text.x = element_text(angle = 45))
+
+#combine commands
+gapminder %>%
+  # Filter countries located in the Americas
+  filter(continent == "Americas") %>%
+  # Make the plot
+  ggplot(mapping = aes(x = year, y = lifeExp)) + # set x and y
+  geom_line() +                                  # line plot
+  facet_wrap( ~ country) +                       # split the plot by country
+  theme(axis.text.x = element_text(angle = 45))  # x axis labels at 45 degree angle
+
+#combine with mutate() command
+
+gapminder %>%
+  # extract first letter of country name into new column
+  mutate(startsWith = substr(country, 1, 1)) %>%
+  # only keep countries starting with A or Z
+  filter(startsWith %in% c("A", "Z")) %>%
+  # plot lifeExp into facets
+  ggplot(aes(x = year, y = lifeExp, colour = continent)) +  # x and y and set color
+  geom_line() +                                             # line plot
+  facet_wrap(vars(country)) +                               # faceting variables 
+  theme_minimal()                                           # set theme
+
+
+```
+
+```{r}
+#Advanced challange
+#Calculate the average life expectancy in 2002 of 2 randomly selected countries for each continent. Then arrange the continent names in reverse order. Hint: Use the dplyr functions arrange() and sample_n(), they have similar syntax to other dplyr functions.
+
+ad_chal <- gapminder %>% 
+  select(continent, country, year, lifeExp) %>% 
+  filter(year==2002) %>% 
+  group_by(continent) %>% 
+  sample_n(2) %>% 
+  summarise(average = mean(lifeExp)) %>% 
+  arrange(desc(average))
+  
+ad_chal_plot <- ad_chal %>%  ggplot(aes(x=continent, y=average,
+                                        color = continent)) +
+  geom_point(shape = 17, size=5)
+
+#advance colouring
+
+install.packages("RColorBrewer")
+library(RColorBrewer)
+
+ad_chal_plot + scale_color_brewer(palette = "Greens")
+
+ad_chal_plot
+
+```
+
+
+```{r} 
+#Economics
+
+ec <- read.csv("data_economist.csv",header=T)
+head(ec)
+str(ec)
+levels(ec$Region)
+
+ec$Region <- factor(ec$Region,levels = c("EU W. Europe",
+                                "Americas",
+                                "Asia Pacific",
+                                "East EU Cemt Asia",
+                                "MENA",
+                                "SSA"),
+                     labels = c("OECD",
+                                "Americas",
+                                "Asia &\nOceania",
+                                "Central &\nEastern Europe",
+                                "Middle East &\nNorth Africa",
+                                "Sub-Saharan\nAfrica"))
+
+ec$Region
+
+head(ec)
+
+labels <- c("Congo","Afghanistan","Sudan","Myanmar","Iraq","Venezuela","Russia","Argentina","Brazil","Italy","South Africa","Cape Verde","Bhutan","Botswana","Britian","New Zealand","Greece","China","India","Rwanda","Spain","France","United States","Japan","Norway","Singapore","Barbados","Germany")
+
+p+geom_text(data=subset(ec,Country %in% labels),aes(label=Country),color="black")
+
+p <- ec %>% ggplot(aes(x=CPI, y=HDI, color=Region)) +
+  geom_point(shape = 1, size = 3, fill ="white", stroke = 0.8) +
+  geom_smooth(method="lm",formula=y~poly(x,2),se=F,size=0.6, color="red") 
+
+p+ geom_text(data=subset(ec,Country %in% labels), 
+             aes(label=Country), color="black", size = 3)
+
+install.packages("ggrepel")
+
+library(ggrepel)
+p <- p+geom_text_repel(data=subset(ec,Country %in% labels),aes(label=Country),
+                       color="black",box.padding=unit(1,'lines'),segment.size=0.25,
+                       size=3,family="Gidole")
+p
+
+p <- p+scale_x_continuous(name="Corruption Perceptions Index, 2011 (10=least corrupt)",
+                          breaks=1:10,limits=c(1,10))+
+      scale_y_continuous(name="Human Development Index, 2011 (1=best)",
+                         breaks=seq(from=0,to=1,by=0.1),limits=c(0.2,1))
+p
+```
