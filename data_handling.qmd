@@ -1,16 +1,9 @@
 ---
-title: "practice"
+title: "Economics Scatterplot"
 format: html
 editor: visual
+theme: quartz
 ---
-
-## Quarto
-
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
-
-## Running Code
-
-When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
 ```{r}
 install.packages("tidyverse")
@@ -28,6 +21,7 @@ pollution <- read_csv(pollution_raw)
 View(pollution)
 p1<- pollution %>%  pivot_wider(names_from = size, values_from = amount)
 ```
+
 ```{r}
 
 p2<- p1 %>% 
@@ -51,7 +45,6 @@ storms3 <- storms2 %>%
 
 View(storms3)
 ```
-
 
 ```{r}
 library(tidyverse)
@@ -124,7 +117,8 @@ log_plot
 ```
 
 ##challenge 4
-```{r} 
+
+```{r}
 
 logplot_4 <- ggplot(data = gapminder, 
                        mapping = aes(x = gdpPercap, y = lifeExp,
@@ -136,9 +130,7 @@ logplot_4 <- ggplot(data = gapminder,
 ?geom_point
 ```
 
-
-##Multipanel figrue 
-
+##Multipanel figrue
 
 ```{r}
 americas <- gapminder[gapminder$continent== "Americas",]
@@ -163,6 +155,7 @@ ggsave(filename = "results/lifeExp.png", plot = lifeExp_plot, width = 15, height
 
 
 ```
+
 ##challenge 5
 
 ```{r}
@@ -178,27 +171,8 @@ ggplot(data = gapminder, mapping = aes(x = continent, y = lifeExp,
 
 ```
 
-```{r}
-sink("sessionInfo.txt")
-
-sessionInfo()
-
-sink()
-```
-```{r}
-library(ggplot2)
-
-require(palmerpenguins) # load penguins data pack2
-
-data("penguins") # load penguins data
-
-
-```
-You can add options to executable code like this
-
-```{r}
-#| echo: false
-2 * 2
+```{}
 ```
 
-The `echo: false` option disables the printing of code (only output is displayed).
+```{}
+```
