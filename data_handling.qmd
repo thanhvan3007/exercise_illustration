@@ -1,0 +1,204 @@
+---
+title: "practice"
+format: html
+editor: visual
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+install.packages("tidyverse")
+library(tidyverse)
+library(dplyr)
+library(readr)
+cases_raw2 <- "https://github.com/rstudio/EDAWR/blob/master/data-raw/cases.csv?raw=true"
+
+cases <- readr::read_csv(cases_raw2)
+cases %>% pivot_longer(cols=starts_with("20"), names_to = "year", values_to = "counts")
+pollution_raw <- "https://github.com/rstudio/EDAWR/blob/master/data-raw/pollution.csv?raw=true"
+
+pollution <- read_csv(pollution_raw)
+
+View(pollution)
+p1<- pollution %>%  pivot_wider(names_from = size, values_from = amount)
+```
+```{r}
+
+p2<- p1 %>% 
+  pivot_longer(
+    names_to = "size", 
+    values_to = "amount", 
+    cols = 2:3)
+
+```
+
+```{r}
+
+storms <- read_csv("https://github.com/rstudio/EDAWR/blob/master/data-raw/storms.csv?raw=true")
+View(storms)
+storms2 <- storms %>% 
+  separate(date, c("year", "month", "day"), sep="-")
+View(storms2)
+
+storms3 <- storms2 %>% 
+  unite("date", year, month, day, sep = "/")
+
+View(storms3)
+```
+
+
+```{r}
+library(tidyverse)
+library(tidyr)
+library(readr)
+
+
+
+gapminder_data <- as_tibble(gapminder_data) # make it tibble or tbl data type too
+
+head(gapminder_data)
+str(gapminder_data)
+
+
+str(gapminder_wide)
+head(gapminder_wide)
+
+gaplong <- gapminder_wide %>% 
+  pivot_longer(cols= c(starts_with("gdpPercap"), starts_with("lifeExp"), starts_with("pop")), names_to = "obstyp_year", values_to = "value"
+               )
+head(gaplong)
+View(gaplong)
+
+```
+
+```{r}
+gapminder <- gapminder_data
+
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp)) + geom_point()
+
+str(gapminder)
+
+plot1 <- ggplot(data = gapminder, mapping = aes(x = year, y = lifeExp)) + geom_smooth()
+plot1
+
+plot1_1 <- ggplot(data = gapminder, mapping = aes(x = year, y = lifeExp,
+                                       colour = continent)) + geom_smooth()
+plot1_1
+
+plot2 <- ggplot(data = gapminder, 
+                mapping = aes(x = year, y = lifeExp,
+                              colour = continent)) + geom_point()
+plot2
+
+
+plot3 <- ggplot(data = gapminder, 
+                mapping = aes(x = year, y = lifeExp,
+                              colour = continent)) + geom_line()
+plot3
+
+plot4 <- ggplot(data = gapminder, 
+                mapping = aes(x = year, y = lifeExp,
+                              group = country)) +
+                geom_line(colour = "blue") + geom_point()
+plot4
+
+
+```
+
+```{r}
+logplot <- ggplot(data = gapminder, 
+                       mapping = aes(x = gdpPercap, y = lifeExp)) +
+  geom_point(alpha = 0.5) + 
+  scale_x_log10() + 
+  geom_smooth(method="lm", linewidth = 1.5)
+
+log_plot
+
+
+```
+
+##challenge 4
+```{r} 
+
+logplot_4 <- ggplot(data = gapminder, 
+                       mapping = aes(x = gdpPercap, y = lifeExp,
+                                     colour = continent)) +
+  geom_point(alpha = 0.5, size=3, shape =1) + 
+  scale_x_log10() + 
+  geom_smooth(method="lm", linewidth = 1.5)
+
+?geom_point
+```
+
+
+##Multipanel figrue 
+
+
+```{r}
+americas <- gapminder[gapminder$continent== "Americas",]
+
+ ggplot(data = americas, 
+        mapping = aes(x = year, y = lifeExp)) +
+  geom_line() +   facet_wrap(~country) +
+   theme(axis.text.x = element_text(angle = 45))
+
+lifeExp_plot <- ggplot(data = americas, mapping = aes(x = year, y = lifeExp, color=continent)) +
+  geom_line() + 
+  facet_wrap( ~ country) +
+  labs(                      # labels
+    x = "Year",              # x axis title
+    y = "Life expectancy",   # y axis title
+    title = "Figure 1: Life expectancy changes over years of countries in America continent",      # main title of figure
+    color = "Continent"      # title of legend
+  ) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+ggsave(filename = "results/lifeExp.png", plot = lifeExp_plot, width = 15, height = 15, dpi = 300, units = "cm")
+
+
+```
+##challenge 5
+
+```{r}
+ggplot(data = gapminder, mapping = aes(x = continent, y = lifeExp, 
+                                       fill=continent)) +
+  geom_boxplot() + facet_wrap(~year) +
+  ylab("Life Expectation") + 
+  theme(
+    axis.title.x = element_blank(),
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
+
+```
+
+```{r}
+sink("sessionInfo.txt")
+
+sessionInfo()
+
+sink()
+```
+```{r}
+library(ggplot2)
+
+require(palmerpenguins) # load penguins data pack2
+
+data("penguins") # load penguins data
+
+
+```
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
