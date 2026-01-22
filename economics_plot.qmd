@@ -7,6 +7,10 @@ theme: quartz
 
 # Economics Scatterplot
 
+The aim of this challenge is to recreate the plot below originally published in [The Economist](https://www.economist.com/blogs/dailychart/2011/12/corruption-and-development). The graph is a scatterplot showing the relationship between *Corruption Index* and *Human Development Index* for various countries.
+
+First, add database and set factor.
+
 ```{r}
 #load libraries
 install.packages("tidyverse")
@@ -39,7 +43,12 @@ head(ec)
 
 labels <- c("Congo","Afghanistan","Sudan","Myanmar","Iraq","Venezuela","Russia","Argentina","Brazil","Italy","South Africa","Cape Verde","Bhutan","Botswana","Britian","New Zealand","Greece","China","India","Rwanda","Spain","France","United States","Japan","Norway","Singapore","Barbados","Germany")
 
-p+geom_text(data=subset(ec,Country %in% labels),aes(label=Country),color="black")
+```
+
+Plot 
+
+```{r}
+
 
 p <- ec %>% ggplot(aes(x=CPI, y=HDI, color=Region)) +
   geom_point(shape = 1, size = 3, fill ="white", stroke = 0.8) +
@@ -48,8 +57,10 @@ p <- ec %>% ggplot(aes(x=CPI, y=HDI, color=Region)) +
 p+ geom_text(data=subset(ec,Country %in% labels), 
              aes(label=Country), color="black", size = 3)
 
-install.packages("ggrepel")
+p+geom_text(data=subset(ec,Country %in% labels),aes(label=Country),color="black")
 
+
+install.packages("ggrepel") #packages that help to change font 
 library(ggrepel)
 p <- p+geom_text_repel(data=subset(ec,Country %in% labels),aes(label=Country),
                        color="black",box.padding=unit(1,'lines'),segment.size=0.25,
