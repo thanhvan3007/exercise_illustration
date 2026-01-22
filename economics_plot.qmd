@@ -2,6 +2,7 @@
 title: "Economics Scatterplot"
 format: html
 editor: visual
+theme: quartz
 ---
 
 # Economics Scatterplot
