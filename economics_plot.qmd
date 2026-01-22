@@ -3,6 +3,9 @@ title: "Economics Scatterplot"
 format: html
 editor: visual
 theme: quartz
+warning: false
+output: true
+code-fold: true
 ---
 
 # Economics Scatterplot
@@ -13,10 +16,10 @@ First, add database and set factor.
 
 ```{r}
 #load libraries
-install.packages("tidyverse")
+#install.packages("tidyverse")
 library(tidyverse)
 library(ggplot2)
-install.packages("RColorBrewer")
+#install.packages("RColorBrewer")
 library(RColorBrewer)
 
 ec <- read.csv("data_economist.csv",header=T)
@@ -45,7 +48,7 @@ labels <- c("Congo","Afghanistan","Sudan","Myanmar","Iraq","Venezuela","Russia",
 
 ```
 
-Plot 
+Draw the plot first with x = CPI and y= HDI
 
 ```{r}
 
@@ -57,15 +60,21 @@ p <- ec %>% ggplot(aes(x=CPI, y=HDI, color=Region)) +
 p+ geom_text(data=subset(ec,Country %in% labels), 
              aes(label=Country), color="black", size = 3)
 
-p+geom_text(data=subset(ec,Country %in% labels),aes(label=Country),color="black")
+```
+Now avoid overlapping of labels
 
+```{r}
 
-install.packages("ggrepel") #packages that help to change font 
+#install.packages("ggrepel") #packages that help to change font 
 library(ggrepel)
 p <- p+geom_text_repel(data=subset(ec,Country %in% labels),aes(label=Country),
                        color="black",box.padding=unit(1,'lines'),segment.size=0.25,
                        size=3,family="Gidole")
 p
+```
+Change the scale of x and y axis
+
+```{r}
 
 p <- p+scale_x_continuous(name="Corruption Perceptions Index, 2011 (10=least corrupt)",
                           breaks=1:10,limits=c(1,10))+
